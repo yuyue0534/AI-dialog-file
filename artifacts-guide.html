@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Artifacts 新手指南</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208;
+    --paper: #f5f0e8;
+    --amber: #d4860a;
+    --amber-light: #f0b84a;
+    --amber-pale: #fdf3dc;
+    --rust: #c0441a;
+    --sage: #4a7c59;
+    --slate: #4a5568;
+    --border: #d4c8a8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 24px;
+    position: relative;
+    background: var(--ink);
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 40%, #3a2600 0%, transparent 70%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(212,134,10,0.07) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(212,134,10,0.07) 40px);
+  }
+
+  .envelope-icon {
+    font-size: 64px;
+    margin-bottom: 28px;
+    animation: float 3s ease-in-out infinite;
+    position: relative;
+    z-index: 1;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--amber-light);
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 900;
+    font-size: clamp(42px, 8vw, 88px);
+    line-height: 1.05;
+    color: var(--paper);
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+
+  .hero-title span {
+    color: var(--amber-light);
+    display: block;
+  }
+
+  .hero-sub {
+    margin-top: 24px;
+    font-size: 17px;
+    color: rgba(245,240,232,0.65);
+    max-width: 520px;
+    line-height: 1.7;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: rgba(245,240,232,0.4);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    z-index: 1;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  .scroll-hint::after {
+    content: '↓';
+    font-size: 20px;
+    color: var(--amber-light);
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(6px); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SECTION ── */
+  .section {
+    padding: 100px 24px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--amber);
+    opacity: 0.3;
+    max-width: 80px;
+  }
+
+  .section-title {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 700;
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.2;
+    margin-bottom: 20px;
+    color: var(--ink);
+  }
+
+  .section-body {
+    font-size: 16px;
+    line-height: 1.85;
+    color: var(--slate);
+    max-width: 640px;
+  }
+
+  /* ── DEFINITION ── */
+  .definition-block {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 3px;
+    padding: 44px 48px;
+    margin: 60px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .definition-block::before {
+    content: '"';
+    position: absolute;
+    top: -20px;
+    left: 32px;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 180px;
+    color: var(--amber);
+    opacity: 0.15;
+    line-height: 1;
+  }
+
+  .definition-block p {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 20px;
+    line-height: 1.75;
+    position: relative;
+    z-index: 1;
+  }
+
+  .definition-block strong {
+    color: var(--amber-light);
+    font-weight: 700;
+  }
+
+  /* ── TYPE CARDS ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2px;
+    margin: 48px 0;
+    background: var(--border);
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .card {
+    background: var(--paper);
+    padding: 32px 28px;
+    transition: background 0.2s;
+    cursor: default;
+  }
+
+  .card:hover {
+    background: var(--amber-pale);
+  }
+
+  .card-icon {
+    font-size: 36px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .card-title {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: var(--ink);
+  }
+
+  .card-desc {
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--slate);
+  }
+
+  .card-tag {
+    display: inline-block;
+    margin-top: 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    border: 1px solid var(--amber);
+    color: var(--amber);
+    border-radius: 100px;
+    letter-spacing: 1px;
+  }
+
+  /* ── STEPS ── */
+  .steps {
+    counter-reset: step;
+    list-style: none;
+    margin: 48px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-left: 2px solid var(--border);
+    padding-left: 0;
+    margin-left: 24px;
+  }
+
+  .step {
+    counter-increment: step;
+    position: relative;
+    padding: 28px 0 28px 40px;
+  }
+
+  .step::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    left: -36px;
+    top: 28px;
+    width: 48px;
+    height: 48px;
+    background: var(--ink);
+    color: var(--amber-light);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 3px solid var(--paper);
+  }
+
+  .step-title {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 700;
+    font-size: 19px;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+
+  .step-body {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--slate);
+  }
+
+  /* ── EXAMPLE ── */
+  .example-strip {
+    background: var(--ink);
+    padding: 80px 24px;
+  }
+
+  .example-inner {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .example-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--amber-light);
+    margin-bottom: 40px;
+    opacity: 0.8;
+  }
+
+  .example-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+
+  .eg {
+    border: 1px solid rgba(212,200,168,0.2);
+    border-radius: 4px;
+    padding: 24px 20px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .eg:hover {
+    border-color: var(--amber);
+    transform: translateY(-3px);
+  }
+
+  .eg-icon { font-size: 28px; margin-bottom: 12px; }
+
+  .eg-prompt {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--amber-light);
+    opacity: 0.8;
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+
+  .eg-title {
+    font-size: 14px;
+    color: var(--paper);
+    line-height: 1.5;
+  }
+
+  /* ── TIP ── */
+  .tip-box {
+    border: 2px solid var(--amber);
+    border-radius: 4px;
+    padding: 32px 36px;
+    margin: 48px 0;
+    background: var(--amber-pale);
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .tip-icon { font-size: 28px; flex-shrink: 0; }
+
+  .tip-text {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--ink);
+  }
+
+  .tip-text strong {
+    font-weight: 500;
+    color: var(--rust);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 48px 24px;
+    text-align: center;
+  }
+
+  .footer-logo {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 13px;
+    color: var(--slate);
+    opacity: 0.6;
+    letter-spacing: 2px;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0 24px;
+  }
+
+  /* responsive */
+  @media (max-width: 600px) {
+    .definition-block { padding: 32px 28px; }
+    .definition-block p { font-size: 17px; }
+    .tip-box { flex-direction: column; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="envelope-icon">✉️</div>
+  <p class="hero-eyebrow">你收到了 Claude 的来信</p>
+  <h1 class="hero-title">
+    什么是
+    <span>Artifacts？</span>
+  </h1>
+  <p class="hero-sub">一封邮件，一个新能力。让我们用最简单的方式，弄懂这个改变你使用 Claude 方式的功能。</p>
+  <div class="scroll-hint">向下滚动</div>
+</section>
+
+<!-- WHAT IS -->
+<section class="section">
+  <p class="section-label">基本概念</p>
+  <h2 class="section-title">Artifacts 是什么？</h2>
+  <p class="section-body">
+    过去，你和 Claude 对话，回答只是一段文字。而 <strong>Artifacts</strong> 改变了这一切——它让 Claude 能够直接在对话旁边，生成一个可以<strong>预览、运行、下载</strong>的独立作品。
+  </p>
+
+  <div class="definition-block">
+    <p>
+      简单来说：<strong>Artifacts 就是 Claude 帮你"做出来"的东西</strong>，不只是"说给你听"的答案。<br><br>
+      它可以是一个网页、一张图表、一段可运行的代码、一份精美文档……你可以直接看到它、用它、改它。
+    </p>
+  </div>
+
+  <p class="section-body">
+    想象你请一位助手帮你写一份合同。以前他会把文字念给你听；现在，他直接把打印好的合同递到你手上。这就是 Artifacts 的意义。
+  </p>
+</section>
+
+<hr class="divider">
+
+<!-- TYPES -->
+<section class="section">
+  <p class="section-label">类型一览</p>
+  <h2 class="section-title">Artifacts 能做什么？</h2>
+  <p class="section-body">Claude 可以生成多种类型的 Artifacts，每一种都有自己擅长的场景：</p>
+
+  <div class="cards-grid">
+    <div class="card">
+      <span class="card-icon">🌐</span>
+      <div class="card-title">网页 / 交互界面</div>
+      <div class="card-desc">完整的 HTML 页面或 React 组件，在对话旁边直接运行、可点击交互。</div>
+      <span class="card-tag">HTML · React</span>
+    </div>
+    <div class="card">
+      <span class="card-icon">📊</span>
+      <div class="card-title">图表 / 数据可视化</div>
+      <div class="card-desc">把数字变成直观的折线图、柱状图、饼图，一眼看清趋势。</div>
+      <span class="card-tag">可视化</span>
+    </div>
+    <div class="card">
+      <span class="card-icon">💻</span>
+      <div class="card-title">代码文件</div>
+      <div class="card-desc">Python、JavaScript 等代码，带语法高亮，可一键复制或下载。</div>
+      <span class="card-tag">代码</span>
+    </div>
+    <div class="card">
+      <span class="card-icon">📄</span>
+      <div class="card-title">文档 / Markdown</div>
+      <div class="card-desc">格式化的报告、文章、简历，渲染后直接阅读，也可导出使用。</div>
+      <span class="card-tag">文档</span>
+    </div>
+    <div class="card">
+      <span class="card-icon">🎨</span>
+      <div class="card-title">SVG 图形</div>
+      <div class="card-desc">矢量图、图标、示意图，清晰可缩放，可直接下载使用。</div>
+      <span class="card-tag">SVG</span>
+    </div>
+    <div class="card">
+      <span class="card-icon">📁</span>
+      <div class="card-title">Office 文件</div>
+      <div class="card-desc">Word 文档、Excel 表格、PowerPoint 演示文稿，生成后直接下载。</div>
+      <span class="card-tag">DOCX · XLSX · PPTX</span>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- HOW TO USE -->
+<section class="section">
+  <p class="section-label">使用方法</p>
+  <h2 class="section-title">怎么用 Artifacts？</h2>
+  <p class="section-body">使用 Artifacts 不需要任何技术背景，只需用自然语言描述你想要什么：</p>
+
+  <ol class="steps">
+    <li class="step">
+      <div class="step-title">打开 Claude，正常对话</div>
+      <div class="step-body">进入 claude.ai，在对话框里用中文（或任何语言）描述你的需求。不需要特殊命令。</div>
+    </li>
+    <li class="step">
+      <div class="step-title">描述你想要"做出来"的东西</div>
+      <div class="step-body">关键是让 Claude 知道你需要一个<em>可交付的成果</em>，而不只是解释。例如："帮我做一个…" / "创建一个…" / "生成一份…"</div>
+    </li>
+    <li class="step">
+      <div class="step-title">Artifact 出现在右侧面板</div>
+      <div class="step-body">Claude 生成内容时，Artifact 会在对话右侧实时显示。网页会直接运行，文档会直接渲染。</div>
+    </li>
+    <li class="step">
+      <div class="step-title">预览、下载、或继续修改</div>
+      <div class="step-body">满意就下载使用；不满意就直接告诉 Claude "把颜色改成蓝色" / "加上标题" ——它会直接在 Artifact 上修改。</div>
+    </li>
+  </ol>
+
+  <div class="tip-box">
+    <span class="tip-icon">💡</span>
+    <p class="tip-text">
+      <strong>新手小技巧：</strong> 不确定怎么说？直接描述你的目标场景就好，比如"我需要向老板汇报销售数据，帮我做一个直观的图表"，Claude 会自动判断最合适的 Artifact 类型。
+    </p>
+  </div>
+</section>
+
+<!-- EXAMPLES -->
+<div class="example-strip">
+  <div class="example-inner">
+    <p class="example-label">真实示例 · 你可以直接这样说</p>
+    <div class="example-list">
+      <div class="eg">
+        <div class="eg-icon">🧮</div>
+        <div class="eg-prompt">"帮我做一个…"</div>
+        <div class="eg-title">个人月度预算追踪表，支持输入收入和各类支出</div>
+      </div>
+      <div class="eg">
+        <div class="eg-icon">📈</div>
+        <div class="eg-prompt">"生成一张…"</div>
+        <div class="eg-title">2020-2024年全球电动车销量的折线图</div>
+      </div>
+      <div class="eg">
+        <div class="eg-icon">🎮</div>
+        <div class="eg-prompt">"创建一个…"</div>
+        <div class="eg-title">网页版贪吃蛇小游戏，可以直接玩</div>
+      </div>
+      <div class="eg">
+        <div class="eg-icon">📋</div>
+        <div class="eg-prompt">"写一份…"</div>
+        <div class="eg-title">软件工程师的英文简历模板，格式专业</div>
+      </div>
+      <div class="eg">
+        <div class="eg-icon">🗺️</div>
+        <div class="eg-prompt">"做一个…"</div>
+        <div class="eg-title">旅行行程规划页面，按天列出景点和时间</div>
+      </div>
+      <div class="eg">
+        <div class="eg-icon">🔢</div>
+        <div class="eg-prompt">"生成一个…"</div>
+        <div class="eg-title">在线计算器，支持基础运算和历史记录</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TIPS -->
+<section class="section">
+  <p class="section-label">注意事项</p>
+  <h2 class="section-title">开始前，了解这几点</h2>
+
+  <div class="tip-box">
+    <span class="tip-icon">✅</span>
+    <p class="tip-text">
+      <strong>Artifacts 默认开启</strong>——在 claude.ai 的设置中，确认"Artifacts"功能已打开（通常默认开启）。
+    </p>
+  </div>
+
+  <div class="tip-box">
+    <span class="tip-icon">🔄</span>
+    <p class="tip-text">
+      <strong>可以反复修改</strong>——生成后不满意？直接在对话框继续说"把字体改大"、"加一个深色模式"，Claude 会更新同一个 Artifact。
+    </p>
+  </div>
+
+  <div class="tip-box">
+    <span class="tip-icon">📱</span>
+    <p class="tip-text">
+      <strong>手机也能用</strong>——Claude 移动端 App 同样支持 Artifacts，生成的内容可以直接分享或保存。
+    </p>
+  </div>
+
+  <div class="tip-box">
+    <span class="tip-icon">⚡</span>
+    <p class="tip-text">
+      <strong>AI 驱动</strong>——高级 Artifacts（如 AI 对话应用）可以内嵌 Claude API，让你的 Artifact 本身就具备 AI 能力。这是进阶玩法，适合有兴趣的用户深入探索。
+    </p>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-logo">CLAUDE BY ANTHROPIC · ARTIFACTS 新手指南</p>
+</footer>
+
+</body>
+</html>
